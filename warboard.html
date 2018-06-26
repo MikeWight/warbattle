@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Good Luck</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Battle Station</h1>
+            <div class="row mt-5">
+                <div class="col-4 text-center text-primary">
+                    <h2 id="playerOne"></h2>
+                </div>
+                <div class="col-4 text-center">VS</div>
+                <div class="col-4 text-center text-danger">
+                    <h2 id="playerTwo"></h2>
+                </div>
+            </div>
+        </div>
+        <h1 id="timer"></h1>
+        <button class="invisible" id="newGame">New Game</button>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            socket.on('player-entered', (data) => {
+                $('#playerOne').html(data.playerOneName);
+                $('#playerTwo').html(data.playerTwoName);
+            });
+
+            socket.on('counter', (msg) => {
+                $('#timer').html(msg);
+            });
+
+            socket.on('new-game', () => {
+                $("#newGame").removeClass("invisible");
+                $("#newGame").addClass("visible");
+            });
+            socket.on('disconnect', () => {
+                alert('Server disconnected! Check your net connection');
+                window.location = "/"; //page you want to redirect
+            });
+            $(document).ready(function () {
+                $('#newGame').click((e) => {
+                    $("#newGame").addClass("visible");
+                    $("#newGame").removeClass("invisible");
+                    socket.emit('restart');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
